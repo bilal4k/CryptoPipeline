@@ -1,0 +1,36 @@
+{
+  "type": "record",
+  "name": "KafkaKlineEvent",
+  "namespace": "com.example.kafka",
+  "fields": [
+    {"name": "e", "type": "string"},
+    {"name": "E", "type": "long"},
+    {"name": "s", "type": "string"},
+    {
+      "name": "k",
+      "type": {
+        "type": "record",
+        "name": "Kline",
+        "fields": [
+          {"name": "t", "type": "long"},
+          {"name": "T", "type": "long"},
+          {"name": "s", "type": "string"},
+          {"name": "i", "type": "string"},
+          {"name": "f", "type": "long"},
+          {"name": "L", "type": "long"},
+          {"name": "o", "type": "string"},
+          {"name": "c", "type": "string"},
+          {"name": "h", "type": "string"},
+          {"name": "l", "type": "string"},
+          {"name": "v", "type": "string"},
+          {"name": "n", "type": "int"},
+          {"name": "x", "type": "boolean"},
+          {"name": "q", "type": "string"},
+          {"name": "V", "type": "string"},
+          {"name": "Q", "type": "string"},
+          {"name": "B", "type": "string"}
+        ]
+      }
+    }
+  ]
+}
