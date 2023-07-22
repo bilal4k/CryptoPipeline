@@ -55,12 +55,11 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
 
   websocket_client:
-    build: .
+    build: 
+      context: ./producer
     container_name: websocket_client
     depends_on:
       - kafka
-    volumes:
-      - ./websocket_client.py:/app/websocket_client.py
 
   kafka-ui:
     container_name: kafka-ui
