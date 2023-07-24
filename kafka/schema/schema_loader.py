@@ -5,7 +5,7 @@ import requests
 SCHEMA_REGISTRY_URL = 'http://schemaregistry:8085'
 
 # Path to the Avro schema file
-SCHEMA_FILE_PATH = "btcusdt-kline_event.avsc"
+SCHEMA_FILE_PATH = "btcusdt-kline-value_event.avsc"
 
 def read_avro_schema(file_path):
     """
@@ -31,7 +31,7 @@ def load_avro_schema(avro_schema):
     Returns:
         The response from the Schema Registry
     """
-    url = f'{SCHEMA_REGISTRY_URL}/subjects/btcusdt-kline/versions'
+    url = f'{SCHEMA_REGISTRY_URL}/subjects/btcusdt-kline-value/versions'
     headers = {'Content-Type': 'application/vnd.schemaregistry.v1+json'}
     data = f'{{"schema": "{avro_schema}"}}'
     return requests.post(url, headers=headers, data=data)
@@ -47,10 +47,10 @@ def main():
     print(f"Reading schema from {SCHEMA_FILE_PATH}")
     avro_schema = read_avro_schema(SCHEMA_FILE_PATH)
 
-    print("Setting compatibility level to FORWARD...")
+    print("Setting compatibility level to NONE...")
     url = f'{SCHEMA_REGISTRY_URL}/config'
     headers = {'Content-Type': 'application/vnd.schemaregistry.v1+json'}
-    data = '{"compatibility": "FORWARD"}'
+    data = '{"compatibility": "NONE"}'
     requests.put(url, headers=headers, data=data)
 
     response = load_avro_schema(avro_schema)
