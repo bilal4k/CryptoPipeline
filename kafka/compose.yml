@@ -60,6 +60,7 @@ services:
     container_name: websocket_client
     depends_on:
       - kafka
+      - schemaregistry
 
   kafka-ui:
     container_name: kafka-ui
@@ -79,6 +80,7 @@ services:
 
   kafka-init-topics:
     image: confluentinc/cp-kafka:7.2.1
+    container_name: schema_loader
     depends_on:
       - kafka
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
