@@ -1,25 +1,23 @@
+from confluent_kafka.schema_registry import Schema
+from confluent_kafka.schema_registry.avro import AvroSerializer
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka import SerializingProducer
+import websockets
+import asyncio
 import json
 import logging
+import os
 
 # 3rd party library imported
-import asyncio
-import websockets
-from confluent_kafka import SerializingProducer
-from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka.schema_registry.avro import AvroSerializer
-from confluent_kafka.schema_registry import Schema
 
-
-init_string = 'data: '
-source_ws = 'wss://stream.binance.com:9443/ws/btcusdt@kline_1m'
-kafka_url = 'kafka:9092'
-schema_registry_url = 'http://schemaregistry:8085'
-kafka_topic = 'btcusdt-kline'
-schema_registry_subject = f"{kafka_topic}-value"
+source_ws = os.getenv('SOURCE_WS')
+kafka_url = os.getenv('KAFKA_URL')
+schema_registry_url = os.getenv('SCHEMA_REGISTRY_URL')
+kafka_topic = os.getenv('KAFKA_TOPIC')
+schema_registry_subject = os.getenv('SCHEMA_REGISTRY_SUBJECT')
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 async def connect_websocket(source_ws, producer):
     try:
@@ -50,7 +48,6 @@ async def avro_producer(source_ws, kafka_url, schema_registry_url, schema_regist
     sr, latest_version = get_schema_from_schema_registry(
         schema_registry_url, schema_registry_subject)
 
-    
     value_avro_serializer = AvroSerializer(schema_registry_client=sr,
                                            schema_str=latest_version.schema.schema_str,
                                            conf={
@@ -69,6 +66,7 @@ async def avro_producer(source_ws, kafka_url, schema_registry_url, schema_regist
     })
 
     await connect_websocket(source_ws, producer)
+
 
 def delivery_report(errmsg, msg):
     if errmsg is not None:

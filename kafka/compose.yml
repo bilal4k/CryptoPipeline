@@ -40,6 +40,7 @@ services:
 
   schemaregistry:
     image: confluentinc/cp-schema-registry:7.3.2
+    container_name: schemaregistry
     ports:
       - 8085:8085
     depends_on:
@@ -58,6 +59,15 @@ services:
     build: 
       context: ./producer
     container_name: websocket_client
+    command: /app/wait-for-it.sh schemaregistry 8085 -- /app/load-schema-and-start-websocket-client.sh
+    environment:
+      SOURCE_WS: ${SOURCE_WS}
+      KAFKA_URL: ${KAFKA_URL}
+      SCHEMA_REGISTRY_URL: ${SCHEMA_REGISTRY_URL}
+      KAFKA_TOPIC: ${KAFKA_TOPIC}
+      SCHEMA_REGISTRY_SUBJECT: ${SCHEMA_REGISTRY_SUBJECT}
+      SCHEMA_FILE_PATH: ${SCHEMA_FILE_PATH}
+      COMPATIBILITY_LEVEL: ${COMPATIBILITY_LEVEL}
     depends_on:
       - kafka
       - schemaregistry
@@ -80,15 +90,21 @@ services:
 
   kafka-init-topics:
     image: confluentinc/cp-kafka:7.2.1
-    container_name: schema_loader
+    container_name: topic_init
     depends_on:
       - kafka
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                cub kafka-ready -b kafka:29092 1 30 && \
                kafka-topics --create --topic btcusdt-kline --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092'"
 
-  schema_loader:
-    build:
-      context: ./schema
-    depends_on:
-      - schemaregistry
+  # schema_loader:
+  #   container_name: schema_loader
+  #   build:
+  #     context: ./schema
+  #   command: /app/wait-for-it.sh schemaregistry 8085 -- python schema_loader.py
+  #   environment:
+  #     SCHEMA_REGISTRY_URL: ${SCHEMA_REGISTRY_URL}
+  #     SCHEMA_FILE_PATH: ${SCHEMA_FILE_PATH}
+  #     COMPATIBILITY_LEVEL: ${COMPATIBILITY_LEVEL}
+  #   depends_on:
+  #     - schemaregistry
