@@ -96,15 +96,3 @@ services:
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                cub kafka-ready -b kafka:29092 1 30 && \
                kafka-topics --create --topic btcusdt-kline --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092'"
-
-  # schema_loader:
-  #   container_name: schema_loader
-  #   build:
-  #     context: ./schema
-  #   command: /app/wait-for-it.sh schemaregistry 8085 -- python schema_loader.py
-  #   environment:
-  #     SCHEMA_REGISTRY_URL: ${SCHEMA_REGISTRY_URL}
-  #     SCHEMA_FILE_PATH: ${SCHEMA_FILE_PATH}
-  #     COMPATIBILITY_LEVEL: ${COMPATIBILITY_LEVEL}
-  #   depends_on:
-  #     - schemaregistry
